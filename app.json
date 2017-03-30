@@ -1,0 +1,8 @@
+{
+  "name": "Terrain Car",
+  "description": "A simple Physics based car sim in JS.",
+  "image": "heroku/python",
+  "repository": "https://github.com/sahil-mohd/Terrain-Car",
+  "keywords": ["python", "django" ],
+  "addons": [ "heroku-postgresql" ]
+}

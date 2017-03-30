@@ -1,0 +1,440 @@
+<!DOCTYPE html> {% load static %}
+
+<html>
+
+<head>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/materialize.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <header class="base_header">
+        <ul id="dropdown1" class="dropdown-content">
+            <li><a href="#!"><i class="tiny material-icons left">person</i>Profile</a></li>
+            <li><a href="{% url 'game:logout' %}"><i class="tiny material-icons left">exit_to_app</i>Log Out</a></li>
+        </ul>
+
+        <nav>
+            <div class="nav-wrapper white darken-3">
+                <ul class="left show-on-medium-and-down">
+                    <li><a href="#" data-activates="slide-out" class="black-text button-collapse"><i class="material-icons">menu</i></a></li>
+                </ul>
+                <a style="padding-left: 50px" href="#!" class="black-text brand-logo">Creative Lab</a>
+                <ul class="right hide-on-med-and-down" style="padding-right: 50px">
+                    <li><a class="black-text" href="{% url 'game:index' %}"><i class="material-icons left">home</i>Home</a></li>
+                    <li><a class="black-text dropdown-button" href="#!" data-activates="dropdown1" style="padding-left: 30px"><i class="material-icons left">account_circle</i>Profile</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="background-color: #342E37" class="base_main">
+        <div class="row">
+            <div class="center">
+                <a id="stop_sim" class="btn disabled"><i class="material-icons">pause</i></a>
+                <a id="start_sim" class="btn"><i class="material-icons">play_arrow</i></a>
+                <a href="" class="btn"><i class="material-icons">stop</i></a>
+            </div>
+            <div class="center">
+                <p id="stopwatch" style="font-size: 125%; font-weight: 800" class="white-text">000.00</p>
+                <a id="send_score_btn" style="display: none;" class="green btn">Send Score</a>
+                <div style="display: none;">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ send_score_form }}
+                        <button id="send_score_form" type="submit" name="action" value="submit" >send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row valign-wrapper">
+            <div id="canvas_container" style="width: 100%" class="center valign"></div>
+        </div>
+
+    </main>
+
+    <footer class="page-footer white darken-3 base_footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="black-text">Creative Lab</h5>
+                    <p class="black-text text-lighten-4">Some thigns about Creaive lab</p>
+                </div>
+                <div class="col l3 s12">
+                    <h5 class="black-text">Contact</h5>
+                    <ul>
+                        <li><a class="black-text" href="#!">Blah</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="black-text container">
+                Designed and developed by <a class="black-text lighten-3" href="https://github.com/sahil-mohd" target="_blank">Sahil</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="{% static 'js/jquery-3.1.0.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/materialize.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/pathseg.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/decomp.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/matter.js' %}"></script>
+
+    <script>
+        $('#send_score_btn').click(function() {
+            $('#send_score_form').click();
+        })
+
+        // MATTER-JS Stuff
+        var Engine = Matter.Engine,
+            Render = Matter.Render,
+            Runner = Matter.Runner,
+            Composites = Matter.Composites,
+            Constraint = Matter.Constraint,
+            Composite = Matter.Composite,
+            Common = Matter.Common,
+            MouseConstraint = Matter.MouseConstraint,
+            Mouse = Matter.Mouse,
+            World = Matter.World,
+            Bounds = Matter.Bounds,
+            Query = Matter.Query,
+            Body = Matter.Body,
+            Events = Matter.Events,
+            Svg = Matter.Svg,
+            Bodies = Matter.Bodies;
+
+        // create engine
+        var engine = Engine.create(),
+            world = engine.world;
+
+        var canvas_container = document.getElementById('canvas_container');
+
+        // create renderer
+        var render = Render.create({
+            element: canvas_container,
+            engine: engine,
+            options: {
+                width: Math.min(document.documentElement.clientWidth, 800),
+                height: Math.min(document.documentElement.clientHeight, 600),
+                wireframes: false,
+            }
+        });
+
+        Render.run(render);
+
+        // create runner
+        var runner = Runner.create();
+        // add bodies
+        var terrain;
+
+        var stopwatch = document.getElementById('stopwatch'),
+            milli_s = 0,
+            seconds = 0,
+            t,
+            finished = false;
+        function add() {
+            milli_s++;
+            if (milli_s >= 100) {
+                milli_s = 0;
+                seconds++;
+            }
+            
+            stopwatch.textContent = (seconds > 9 ? seconds : "0" + seconds) + '.' + (milli_s > 9 ? milli_s : "0" + milli_s);
+            timer();
+
+            // console.log(milli_s);
+        }
+        function timer() {
+            t = setTimeout(add, 10);
+        }
+
+
+
+        Matter.Grid.create();
+
+        var defaultCategory = 0x0001;
+        var group = Body.nextGroup(true);
+
+        $.get("{% static level %}").done(function(data) {
+            var vertexSets = [];
+
+            $(data).find('path').each(function(i, path) {
+                vertexSets.push(Svg.pathToVertices(path, 30));
+            });
+
+            terrain = Bodies.fromVertices(400, 350, vertexSets, {
+                isStatic: true,
+                collisionFilter: {
+                    mask: defaultCategory,
+                },
+                render: {
+                    fillStyle: '#DBAD6A',
+                    strokeStyle: '#DBAD6A',
+                    lineWidth: 1
+                }
+            }, true);
+
+            World.add(world, terrain);
+
+        });
+
+        function _wheel_center(path) {
+            var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            var b = path.getBBox();
+            return [(b.x + b.width/2), (b.y + b.height/2)]
+        }
+
+        var car = Composite.create();
+        var body_car;
+        var wheels = [];
+        var wheel_center = [];
+        var body_center;
+        $.get("{{ svg_car }}").done(function(data) {
+            var vertexSet_body = [];
+            var vertexSet_wheels = [];
+            var i = 0;
+            var body_offset = [];
+            $(data).find('path').each(function(i, path) {
+                if(i == 0){
+                    var converted_path = Svg.pathToVertices(path, 30);
+                    body_center = _wheel_center(path);
+                    vertexSet_body.push(converted_path);
+                } else {
+                    var converted_path = Svg.pathToVertices(path, 30);
+                    wheel_center.push(_wheel_center(path));
+                    vertexSet_wheels.push(converted_path);
+                }
+                i++;
+            });
+
+            body_car = Bodies.fromVertices(100,50, vertexSet_body, {
+                isStatic: false,
+                collisionFilter: {
+                    group: group,
+                    mask: defaultCategory,
+                },
+                render: {
+                    fillStyle: '#D72638',
+                    strokeStyle: '#D72638',
+                    lineWidth: 1
+                }
+            }, true);
+
+            Composite.add(car, body_car);
+
+            var box = Bodies.rectangle(100,50, 200, 100, {
+                                isStatic: false,
+                                collisionFilter: {
+                                    mask: !defaultCategory,
+                                    // group: group
+                                },
+                                render: {
+                                    fillStyle: 'transparent',
+                                    strokeStyle: 'transparent',
+                                    lineWidth: 1
+                                }
+                            }, true)
+            Composite.add(car, box)
+
+
+            var box_2_body_constraint = Constraint.create({
+                bodyA: body_car,
+                pointA:{ x: body_center[0]-100, y: body_center[1]-50 },
+                pointB:{ x: body_center[0]-100, y: body_center[1]-50 },
+                bodyB: box,
+                stiffness: 0.9,
+                render: {
+                    lineWidth: 1
+                }
+            });
+            Composite.addConstraint(car, box_2_body_constraint);
+            var box_2_body_constraint_ = Constraint.create({
+                bodyA: body_car,
+                pointA:{ x: body_center[0]-100+10, y: body_center[1]-50 },
+                pointB:{ x: body_center[0]-100+10, y: body_center[1]-50 },
+                bodyB: box,
+                stiffness: 0.9,
+                render: {
+                    lineWidth: 1
+                }
+            });
+            Composite.addConstraint(car, box_2_body_constraint_);
+            box_2_body_constraint_ = Constraint.create({
+                bodyA: body_car,
+                pointA:{ x: body_center[0]-100-10, y: body_center[1]-50 },
+                pointB:{ x: body_center[0]-100-10, y: body_center[1]-50 },
+                bodyB: box,
+                stiffness: 0.9,
+                render: {
+                    lineWidth: 1
+                }
+            });
+            Composite.addConstraint(car, box_2_body_constraint_);
+
+            for (var i = 0; i < vertexSet_wheels.length; i++) {
+                wheels.push(Bodies.fromVertices(wheel_center[i][0], wheel_center[i][1], vertexSet_wheels[i], {
+                                isStatic: false,
+                                collisionFilter: {
+                                    group: group
+                                },
+                                render: {
+                                    fillStyle: '#202030',
+                                    strokeStyle: '#202030',
+                                    lineWidth: 1
+                                }
+                            }, true));
+                var axelA = Constraint.create({
+                    bodyA: box,
+                    pointA:{ x: wheel_center[i][0]-100, y: wheel_center[i][1]-50 },
+                    bodyB: wheels[i],
+                    stiffness: 0.9,
+                    render: {
+                        lineWidth: 1
+                    }
+                });
+
+                Composite.add(car, wheels[i]);
+                Composite.addConstraint(car, axelA);
+            }
+        });
+
+        
+        World.add(world, car);
+
+        goal = Bodies.rectangle(1500, 100, 100, 1000, {
+                    isSensor: true,
+                    isStatic: true,
+                    render: {
+                        fillStyle: 'transparent',
+                        lineWidth: 1
+                    }
+        });
+
+        World.add(world, goal);
+
+
+        initialEngineBoundsMaxX = render.bounds.max.x;
+        initialEngineBoundsMaxY = render.bounds.max.y;
+        centerX = - 200;
+        centerY = - 200;
+
+        var counter = 0, 
+            scaleFactor = 1.01,
+            infCounter = -1000;
+
+        Events.on(engine, 'beforeUpdate', function(event){
+            counter += 1;
+            infCounter += 1;
+            prev_bp = engine.broadphase
+
+            //follow car X
+            render.bounds.min.x = centerX + body_car.bounds.min.x;
+            render.bounds.max.x = centerX + body_car.bounds.min.x + initialEngineBoundsMaxX;
+            //follow car Y
+            render.bounds.min.y = centerY + body_car.bounds.min.y;
+            render.bounds.max.y = centerY + body_car.bounds.min.y + initialEngineBoundsMaxY;
+
+            if (counter >= 60 * 5) {
+                counter = 0;
+                curr_bp = engine.broadphase;
+                if(prev_bp == curr_bp)
+                    console.log(curr_bp);
+            }
+        });
+
+
+        document.addEventListener("keydown", function(event) {
+            console.log(event.which);
+            if(event.keyCode == 39){
+                console.log("1- Left\n\n" + event.which)
+                for (var i = 0; i < wheels.length; i++) {
+                    Body.setAngularVelocity(wheels[i], 0.1);
+                }
+            }
+            if(event.keyCode == 37){
+                console.log("1- Right\n\n" + event.which)
+                for (var i = 0; i < wheels.length; i++) {
+                    Body.setAngularVelocity(wheels[i], -0.1);
+                }
+            }
+            if(event.keyCode == 32){
+                console.log("Pause\n\n" + event.which)
+                Runner.stop(runner);
+            }
+            if(event.keyCode == 81){
+                console.log("Pause\n\n" + event.which)
+                Runner.start(runner, engine);
+            }
+        });
+
+
+        Events.on(engine, 'collisionStart', function(event) {
+            var pairs = event.pairs;
+
+
+            for (var i = 0, j = pairs.length; i != j; ++i) {
+                var pair = pairs[i];
+
+                if (pair.bodyA === goal) {
+                    Runner.stop(runner);
+                    $('#id_score')[0].value = parseFloat(stopwatch.textContent);
+                    $('#send_score_btn').show();
+                    clearTimeout(t);
+                } else if (pair.bodyB === goal) {
+                    Runner.stop(runner);
+                    $('#id_score')[0].value = parseFloat(stopwatch.textContent);
+                    $('#send_score_btn').show();
+                    clearTimeout(t);
+                }
+            }
+        });
+
+        // fit the render viewport to the scene
+        Render.lookAt(render, {
+            min: { x: 0, y: 0 },
+            max: { x: 800, y: 500 }
+        });
+
+        $('#stop_sim').click(function() {
+            if ($(this).hasClass('disabled')) {
+                $('#start_sim').removeClass('disabled');
+            } else {
+                Runner.stop(runner);
+                clearTimeout(t);
+                engine.enabled = false;
+                $(this).addClass('disabled');
+                $('#start_sim').removeClass('disabled');
+            }
+            
+        });
+
+        var first_time_start = true;
+        $('#start_sim').click(function() {
+            if (first_time_start) {
+                Composite.translate(car, {
+                    x: -600,
+                    y: -100
+                });
+                first_time_start = false;
+            }
+
+            if ($(this).hasClass('disabled')) {
+                $('#stop_sim').removeClass('disabled');
+            } else {
+                timer();
+                Runner.start(runner, engine);
+                engine.enabled = true;
+                $(this).addClass('disabled');
+                $('#stop_sim').removeClass('disabled')
+            }
+        });
+    </script>
+
+</body>
+
+</html>

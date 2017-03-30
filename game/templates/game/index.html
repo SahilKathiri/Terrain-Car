@@ -1,0 +1,151 @@
+<!DOCTYPE html> {% load static %}
+
+<html>
+
+<head>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/materialize.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        tr {
+            height: 5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="base_header">
+        <ul id="dropdown1" class="dropdown-content">
+            <li><a href="#!"><i class="tiny material-icons left">person</i>Profile</a></li>
+            <li><a href="{% url 'game:logout' %}"><i class="tiny material-icons left">exit_to_app</i>Log Out</a></li>
+        </ul>
+
+        <nav>
+            <div class="nav-wrapper white darken-3">
+                <ul class="left show-on-medium-and-down">
+                    <li><a href="#" data-activates="slide-out" class="black-text button-collapse"><i class="material-icons">menu</i></a></li>
+                </ul>
+                <a style="padding-left: 50px" href="#!" class="black-text brand-logo">Creative Lab</a>
+                <ul class="right hide-on-med-and-down" style="padding-right: 50px">
+                    <li><a class="black-text" href="#!"><i class="material-icons left">home</i>Home</a></li>
+                    <li><a class="black-text dropdown-button" href="#!" data-activates="dropdown1" style="padding-left: 30px"><i class="material-icons left">account_circle</i>Profile</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main style="background-color: #342E37" class="base_main ">
+        <div class="row ">
+            <div class="col s12 m8 offset-m2 l8 offset-l2 white container z-depth-4" >
+                <div class=" container">
+                    <form method="post" class="center" enctype="multipart/form-data" action="{% url 'game:index' %}">
+                        {% csrf_token %}
+                        <h3>Levels</h3>
+                        <table>
+                            <tr>
+                                <th>Level 1</th>
+                                <td>{{ form.car_1 }}</td>
+                                {% if game_user.car_1.url != '/media/False' %}
+                                    <td><img src="{{ game_user.car_1.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td><a href="{% url 'game:level_1' %}" class=""><img src="{% static 'svg/terrain2.svg' %}" height="100px" width="200px" alt=""></a></td>
+                                <td><a href="{% url 'game:level_1' %}" class="btn black"><i class="material-icons">arrow_forward</i></a></td>
+                            </tr>
+                            <tr>
+                                <th>Level 2</th>
+                                <td>{{form.car_2}}</td>
+                                {% if game_user.car_2.url != '/media/False' %}
+                                    <td><img src="{{ game_user.car_2.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td><a href="{% url 'game:level_1' %}" class=""><img src="{% static 'svg/terrain2.svg' %}" height="100px" width="200px" alt=""></a></td>
+                                <td><a href="{% url 'game:level_2' %}" class="btn black"><i class="material-icons">arrow_forward</i></a></td>
+                            </tr>
+                            <tr>
+                                <th>Level 3</th>
+                                <td>{{form.car_3}}</td>
+                                {% if game_user.car_3.url != '/media/False' %}
+                                    <td><img src="{{ game_user.car_3.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td><a href="{% url 'game:level_1' %}" class=""><img src="{% static 'svg/terrain2.svg' %}" height="100px" width="200px" alt=""></a></td>
+                                <td><a href="{% url 'game:level_3' %}" class="btn black"><i class="material-icons">arrow_forward</i></a></td>
+                            </tr>
+                            <tr>
+                                <th>Level 4</th>
+                                <td>{{form.car_4}}</td>
+                                {% if game_user.car_4.url != '/media/False' %}
+                                    <td><img src="{{ game_user.car_4.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td><a href="{% url 'game:level_1' %}" class=""><img src="{% static 'svg/terrain2.svg' %}" height="100px" width="200px" alt=""></a></td>
+                                <td><a href="{% url 'game:level_4' %}" class="btn black"><i class="material-icons">arrow_forward</i></a></td>
+                            </tr>
+                            <tr>
+                                <th>Level 5</th>
+                                <td>{{form.car_5}}</td>
+                                {% if game_user.car_5.url != '/media/False' %}
+                                    <td><img src="{{ game_user.car_5.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                <td><a href="{% url 'game:level_1' %}" class=""><img src="{% static 'svg/terrain2.svg' %}" height="100px" width="200px" alt=""></a></td>
+                                <td><a href="{% url 'game:level_5' %}" class="btn black"><i class="material-icons">arrow_forward</i></a></td>
+                            </tr>
+                        </table>
+                        <button class="btn waves-effect waves-light black white-text" type="submit" name="action" value="submit" style="margin-top: 3rem;margin-bottom: 5rem">Save Changes<i class="material-icons right">send</i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row valign-wrapper">
+            <div id="canvas_container" style="width: 100%" class="center valign"></div>
+        </div>
+    </main>
+
+    <footer class="page-footer white darken-3 base_footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="black-text">Creative Lab</h5>
+                    <p class="black-text text-lighten-4">Some thigns about Creative lab</p>
+                </div>
+                <div class="col l3 s12">
+                    <h5 class="black-text">Contact</h5>
+                    <ul>
+                        <li><a class="black-text" href="#!">Blah</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="black-text container">
+                Designed and developed by <a class="black-text lighten-3" href="https://github.com/sahil-mohd" target="_blank">Sahil</a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="text/javascript" src="{% static 'js/jquery-3.1.0.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/materialize.js' %}"></script>
+
+    <!-- 
+     ______
+    < meow >
+     ------
+            \   ^__^
+             \  (oo)\_______
+                (__)\       )\/\
+                    ||----w |
+                    ||     ||
+     -->
+</body>
+
+</html>
