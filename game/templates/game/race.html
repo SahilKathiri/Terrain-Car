@@ -225,6 +225,7 @@
                 }
             }, true);
 
+            // Body.setMass(body_car, 100);
             Composite.add(car, body_car);
 
             var box = Bodies.rectangle(100,50, 200, 100, {
@@ -239,6 +240,9 @@
                                     lineWidth: 1
                                 }
                             }, true)
+            Body.setMass(box, 100);
+            // console.log("Mass of Box is : " + box.mass + "\n and Density is : " + box.density);
+            // console.log("Mass of Body is : " + body_car.mass + "\n and Density is : " + body_car.density);
             Composite.add(car, box)
 
 
