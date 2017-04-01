@@ -11,8 +11,8 @@ urlpatterns = [
     url(r'^logout/$', views.game_logout, name='logout'),
 	url(r'^auth/$', views.game_auth, name='login_auth'),
 
-	# S3 Signing
-	url(r'^sign-s3/$', views.sign_s3, name='sign_s3'),
+	# # S3 Signing
+	# url(r'^sign-s3/$', views.sign_s3, name='sign_s3'),
 
 	# Levels
 	url(r'^level/1$', views.level_1, name='level_1'),
