@@ -1,8 +1,20 @@
+from hashlib import sha1
+import base64
+import hashlib
+import hmac
+import logging
+import os
+import time
+import urllib
+import urllib.parse
+
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
+from django.contrib.auth.decorators import login_required, permission_required
+from django.forms.models import model_to_dict
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.forms.models import model_to_dict
 
 from .forms import LoginForm, UploadCarsForm, ScoreForm
 
@@ -206,3 +218,36 @@ def game_login(request):
 def game_logout(request):
 	logout(request)
 	return redirect('game:login')
+
+
+@login_required()
+@permission_required('game.view_game')
+def sign_s3(request):
+	"""
+	https://devcenter.heroku.com/articles/s3-upload-python
+	"""
+	AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID')
+	AWS_SECRET_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+	S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
+
+	object_name = urllib.parse.quote_plus(request.GET['file-name'])
+	mime_type = request.GET['file-type']
+
+	secondsPerDay = 24*60*60
+	expires = int(time.time()+secondsPerDay)
+	amz_headers = "x-amz-acl:public-read"
+
+	string_to_sign = "PUT\n\n%s\n%d\n%s\n/%s/%s" % (mime_type, expires, amz_headers, S3_BUCKET, object_name)
+
+	encodedSecretKey = AWS_SECRET_KEY.encode()
+	encodedString = string_to_sign.encode()
+	h = hmac.new(encodedSecretKey, encodedString, sha1)
+	hDigest = h.digest()
+	signature = base64.encodebytes(hDigest).strip()
+	signature = urllib.parse.quote_plus(signature)
+	url = 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, object_name)
+
+	return JsonResponse({
+		'signed_request': '%s?AWSAccessKeyId=%s&Expires=%s&Signature=%s' % (url, AWS_ACCESS_KEY, expires, signature),
+		'url': url,
+	})
