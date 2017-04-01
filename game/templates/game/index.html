@@ -171,7 +171,7 @@
 				if(xhr.readyState === 4){
 					if(xhr.status === 200){
 						const response = JSON.parse(xhr.responseText);
-						uploadFile(file, response.data, response.url);
+						uploadFile(file, response, response.url);
 					}
 					else{
 						alert('Could not get signed URL.');
