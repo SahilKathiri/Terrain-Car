@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from s3direct.fields import S3DirectField
 
 def svg_upload_path_1(instance, filename):
 	return 'svg_cars/{0}/1__{1}'.format(instance.user.username, filename)
@@ -20,11 +21,11 @@ class GameUser(models.Model):
 	user = models.OneToOneField(User, null=True)
 
 	# CARS
-	car_1 = models.FileField(upload_to=svg_upload_path_1, blank=True)
-	car_2 = models.FileField(upload_to=svg_upload_path_2, blank=True)
-	car_3 = models.FileField(upload_to=svg_upload_path_3, blank=True)
-	car_4 = models.FileField(upload_to=svg_upload_path_4, blank=True)
-	car_5 = models.FileField(upload_to=svg_upload_path_5, blank=True)
+	car_1 = S3DirectField(dest='svg_cars', blank=True)
+	car_2 = S3DirectField(dest='svg_cars', blank=True)
+	car_3 = S3DirectField(dest='svg_cars', blank=True)
+	car_4 = S3DirectField(dest='svg_cars', blank=True)
+	car_5 = S3DirectField(dest='svg_cars', blank=True)
 
 	# High scores
 	score_level_1 = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)

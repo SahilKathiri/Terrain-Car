@@ -13,6 +13,7 @@
             height: 5rem;
         }
     </style>
+    {{ form.media }}
 </head>
 
 <body>
@@ -49,7 +50,7 @@
                                 <th>Level 1</th>
                                 <td>{{ form.car_1 }}</td>
                                 {% if game_user.car_1.url != '/media/False' %}
-                                    <td><img id="preview_car_1" src="{{ game_user.car_1.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                    <td><img id="preview_car_1" src="{{ game_user.car_1 }}" class="materialboxed" height="50px" width="100px" alt=""></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
@@ -60,7 +61,7 @@
                                 <th>Level 2</th>
                                 <td>{{form.car_2}}</td>
                                 {% if game_user.car_2.url != '/media/False' %}
-                                    <td><img src="{{ game_user.car_2.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                    <td><img src="{{ game_user.car_2 }}" class="materialboxed" height="50px" width="100px" alt=""></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
@@ -71,7 +72,7 @@
                                 <th>Level 3</th>
                                 <td>{{form.car_3}}</td>
                                 {% if game_user.car_3.url != '/media/False' %}
-                                    <td><img src="{{ game_user.car_3.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                    <td><img src="{{ game_user.car_3 }}" class="materialboxed" height="50px" width="100px" alt=""></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
@@ -82,7 +83,7 @@
                                 <th>Level 4</th>
                                 <td>{{form.car_4}}</td>
                                 {% if game_user.car_4.url != '/media/False' %}
-                                    <td><img src="{{ game_user.car_4.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                    <td><img src="{{ game_user.car_4 }}" class="materialboxed" height="50px" width="100px" alt=""></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
@@ -93,7 +94,7 @@
                                 <th>Level 5</th>
                                 <td>{{form.car_5}}</td>
                                 {% if game_user.car_5.url != '/media/False' %}
-                                    <td><img src="{{ game_user.car_5.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                    <td><img src="{{ game_user.car_5 }}" class="materialboxed" height="50px" width="100px" alt=""></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}

@@ -54,7 +54,7 @@ def level_1(request):
 
 
 	if game_user.car_1:
-		context_dict['svg_car'] = game_user.car_1.url
+		context_dict['svg_car'] = game_user.car_1
 	else:
 		context_dict['svg_car'] = ''
 
@@ -82,7 +82,7 @@ def level_2(request):
 	context_dict['game_user'] = game_user
 	
 	if game_user.car_2:
-		context_dict['svg_car'] = game_user.car_2.url
+		context_dict['svg_car'] = game_user.car_2
 	else:
 		context_dict['svg_car'] = ''
 
@@ -110,7 +110,7 @@ def level_3(request):
 	context_dict['game_user'] = game_user
 
 	if game_user.car_3:
-		context_dict['svg_car'] = game_user.car_3.url
+		context_dict['svg_car'] = game_user.car_3
 	else:
 		context_dict['svg_car'] = ''
 
@@ -138,7 +138,7 @@ def level_4(request):
 	context_dict['game_user'] = game_user
 	
 	if game_user.car_4:
-		context_dict['svg_car'] = game_user.car_4.url
+		context_dict['svg_car'] = game_user.car_4
 	else:
 		context_dict['svg_car'] = ''
 
@@ -166,7 +166,7 @@ def level_5(request):
 	context_dict['game_user'] = game_user
 
 	if game_user.car_2:
-		context_dict['svg_car'] = game_user.car_5.url
+		context_dict['svg_car'] = game_user.car_5
 	else:
 		context_dict['svg_car'] = ''
 
