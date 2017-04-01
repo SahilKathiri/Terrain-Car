@@ -248,6 +248,6 @@ def sign_s3(request):
 	url = 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, object_name)
 
 	return JsonResponse({
-		'signed_request': '%s?AWSAccessKeyId=%s&Expires=%s&Signature=%s' % (url, AWS_ACCESS_KEY, expires, signature),
+		'data': '%s?AWSAccessKeyId=%s&Expires=%s&Signature=%s' % (url, AWS_ACCESS_KEY, expires, signature),
 		'url': url,
 	})

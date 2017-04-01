@@ -49,7 +49,7 @@
                                 <th>Level 1</th>
                                 <td>{{ form.car_1 }}</td>
                                 {% if game_user.car_1.url != '/media/False' %}
-                                    <td><img src="{{ game_user.car_1.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
+                                    <td><img id="preview_car_1" src="{{ game_user.car_1.url }}" class="materialboxed" height="50px" width="100px" alt=""></td>
                                 {% else %}
                                     <td></td>
                                 {% endif %}
@@ -149,8 +149,7 @@
 			xhr.onreadystatechange = () => {
 				if(xhr.readyState === 4){
 					if(xhr.status === 200 || xhr.status === 204){
-						document.getElementById('preview').src = url;
-						document.getElementById('avatar-url').value = url;
+						document.getElementById('preview_car_1').value = url;
 					}
 					else{
 						alert('Could not upload file.');
