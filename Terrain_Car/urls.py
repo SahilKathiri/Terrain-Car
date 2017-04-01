@@ -6,6 +6,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('game.urls')),
+
+    url(r'^s3direct/', include('s3direct.urls')),
 ]
 
 if settings.DEBUG:

@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+
+    's3direct',
+    
     'game',
 ]
 
@@ -145,3 +148,25 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 # For the document uploads. Mention the path here!
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PROJECT_ROOT,'media')
+
+
+# Amazon S3 conf
+
+# If AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are not defined,
+# django-s3direct will attempt to use the EC2 instance profile instead.
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+
+AWS_STORAGE_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
+S3DIRECT_REGION = os.environ['S3_BUCKET_REGION']
+
+
+S3DIRECT_DESTINATIONS = {
+    'svg_cars': {
+        'key': 'creative_lab_terrain_car/user_uploads/svg_cars',
+        'auth': lambda u: u.is_authenticated(),
+        'allowed': ['image/svg+xml'],
+        'content_length_range': (5000, 2000000),
+    },
+
+}
