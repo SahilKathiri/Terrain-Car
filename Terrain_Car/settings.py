@@ -168,7 +168,7 @@ def create_filename(filename):
     
 S3DIRECT_DESTINATIONS = {
     'svg_cars': {
-        'key': create_filename
+        'key': create_filename,
         'auth': lambda u: u.is_authenticated(),
         'allowed': ['image/svg+xml'],
         'content_length_range': (5000, 2000000),
