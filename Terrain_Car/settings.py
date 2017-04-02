@@ -160,10 +160,15 @@ AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
 S3DIRECT_REGION = os.environ['S3_BUCKET_REGION']
 
-
+def create_filename(filename):
+    import uuid
+    ext = filename.split('.')[-1]
+    filename = '%s.%s' % (uuid.uuid4().hex, ext)
+    return os.path.join('creative_lab_terrain_car/user_uploads/svg_cars', filename)
+    
 S3DIRECT_DESTINATIONS = {
     'svg_cars': {
-        'key': 'creative_lab_terrain_car/user_uploads/svg_cars',
+        'key': create_filename
         'auth': lambda u: u.is_authenticated(),
         'allowed': ['image/svg+xml'],
         'content_length_range': (5000, 2000000),
